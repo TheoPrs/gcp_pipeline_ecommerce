@@ -1,53 +1,37 @@
 # GCP Data Pipeline — E-commerce
 
-Pipeline de données en temps réel sur Google Cloud Platform, construit de A à Z.
+Projet perso pour apprendre GCP et le streaming de données.
+Pipeline qui simule des commandes e-commerce en temps réel,
+les transforme avec Apache Beam, les charge dans BigQuery et les affiche sur Looker Studio.
 
-## Architecture
-```
-simulate_order.py → Pub/Sub → Apache Beam → BigQuery → Airflow → Looker Studio
-```
+## Stack
 
-## Services GCP utilisés
+- Python –> génération des orders via un script et pub sur le topic
+- Pub/Sub –> bus de message 
+- Apache Beam (DirectRunner) –> transformation et chargement dans BigQuery
+- BigQuery –> stockage et analyse
+- Airflow (Docker) –> orchestration quotidienne via DAG pour créer des tables dérivées
+- Looker Studio –> dashboard
 
-- **Pub/Sub** — bus de messages, ingestion des commandes en temps réel
-- **Apache Beam (DirectRunner)** — transformation et chargement dans BigQuery
-- **BigQuery** — stockage et analyse des données
-- **Cloud Composer / Airflow** — orchestration du pipeline quotidien
-- **Looker Studio** — dashboard de visualisation
+## Dashboard live
+
+https://lookerstudio.google.com/s/vhnVNyaIJMw
 
 ## Structure du projet
 ```
 gcp-pipeline-learning/
-├── simulate_order.py    # Générateur de commandes aléatoires
-├── pipeline.py          # Pipeline Beam : Pub/Sub → BigQuery
-├── requirements.txt     # Dépendances Python
-└── README.md
+  simulate_order.py    # Générateur de commandes aléatoires
+  pipeline.py          # Pipeline Beam : Pub/Sub et ingestion BigQuery
+  requirements.txt     # Dépendances Python
+  README.md
 ```
 
-## Lancer le projet
-
-### 1. Installer les dépendances
+## Lancer en local
 ```bash
-python -m venv venv
-source venv/bin/activate
 pip install -r requirements.txt
-```
-
-### 2. Authentification GCP
-```bash
-gcloud auth login
 gcloud auth application-default login
-gcloud config set project TON_PROJECT_ID
-```
-
-### 3. Lancer le simulateur
-```bash
-python simulate_order.py
-```
-
-### 4. Lancer le pipeline
-```bash
-python pipeline.py
+python simulate_order.py   # terminal 1
+python pipeline.py         # terminal 2
 ```
 
 ## Modèle de données
@@ -66,8 +50,3 @@ python pipeline.py
 | unit_price | FLOAT | Prix unitaire |
 | total_line | FLOAT | Total de la ligne (qty x unit_price) |
 
-
-## Dashboard Looker Studio
-
-Visualisation en temps réel des données de la pipeline :
-https://lookerstudio.google.com/s/vhnVNyaIJMw

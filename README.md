@@ -65,3 +65,9 @@ python pipeline.py
 | qty | INTEGER | Quantité commandée |
 | unit_price | FLOAT | Prix unitaire |
 | total_line | FLOAT | Total de la ligne (qty x unit_price) |
+
+
+## Dashboard Looker Studio
+
+Visualisation en temps réel des données de la pipeline :
+https://lookerstudio.google.com/s/vhnVNyaIJMw

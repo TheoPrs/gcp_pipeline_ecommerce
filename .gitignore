@@ -1,14 +1,7 @@
-# Environnement virtuel
 venv/
-
-# Cache Python
 __pycache__/
 *.pyc
 *.pyo
-
-# Fichiers sensibles
 sa-key.json
 .env
-
-# macOS
 .DS_Store

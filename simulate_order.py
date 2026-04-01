@@ -33,8 +33,8 @@ while True:
 
     ts = datetime.now(timezone.utc).isoformat()
     fake = Faker()
-    fake.name()       # nom aléatoire
-    fake.word()       # mot aléatoire
+    fake.name()      
+    fake.word()      
     commande = {
         "order_id" : f"ORD-{str(uuid.uuid4())[:8].upper()}",
         "timestamp" : ts,
@@ -46,6 +46,6 @@ while True:
     }
     data = json.dumps(commande).encode("utf-8")
     future = publisher.publish(topic_path, data)
-    future.result()  # attend confirmation
+    future.result() 
     print(f"[{ts}] {commande['order_id']} — {commande['user_id']} — {commande['country']} — {len(items)} item(s) — {round(commande['total_amount'], 2)}€")
     time.sleep(1)

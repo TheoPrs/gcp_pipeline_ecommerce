@@ -57,13 +57,17 @@ SELECT
 FROM aggregated
 """.format(project=PROJECT_ID, dataset=DATASET)
 
-def alert():
-    print("Anomalie détectée sur le CA du jour !")
+def alert(**context): 
+    ca_moyen = context['ti'].xcom_pull(task_ids='check_ca_anomaly', key='ca_moyen')
+    ca_aujourd_hui = context['ti'].xcom_pull(task_ids='check_ca_anomaly', key='ca_aujourd_hui')
+    ca_moyen_str = f"{round(ca_moyen, 2)}€" if ca_moyen is not None else "N/A"
+    ca_aujourd_hui_str = f"{round(ca_aujourd_hui, 2)}€" if ca_aujourd_hui is not None else "N/A"
+    print(f"Anomalie — ca_moyen_7j: {ca_moyen_str} | ca_aujourd_hui: {ca_aujourd_hui_str}")
 
 def no_alert():
     print("Aucune anomalie sur le chiffre d'affaire d'aujourd'hui. ")
 
-def check_anomaly():
+def check_anomaly(**context):
     client = bigquery.Client(project="gcp-pipeline-theo")
     query = """
         SELECT
@@ -76,10 +80,12 @@ WHERE order_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 7 DAY)
     row = list(result)[0]
     ca_moyen = row["ca_moyen_7j"]
     ca_aujourd_hui = row["ca_aujourd_hui"]
-    if ca_aujourd_hui is None or not (ca_moyen * 0.5 < ca_aujourd_hui < ca_moyen * 1.5):
-        return "no_alert"
-    else:
+    context['ti'].xcom_push(key='ca_moyen', value=ca_moyen)
+    context['ti'].xcom_push(key='ca_aujourd_hui', value=ca_aujourd_hui)
+    if ca_aujourd_hui is None or not (ca_moyen * 0.50 < ca_aujourd_hui < ca_moyen * 1.50):
         return "log_alert"
+    else:
+        return "no_alert"
 
 with DAG(
     dag_id="ecommerce_pipeline",
